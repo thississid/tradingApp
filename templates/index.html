@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            margin: 0;
+        }
+        form {
+            text-align: center;
+            margin: 20px auto;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        h2 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+        li {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            position: relative;
+        }
+        li form {
+            display: inline;
+        }
+        li button {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
+        li button:hover {
+            background-color: #c82333;
+        }
+        #stock-chart {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .ui-menu-item {
+            padding: 10px;
+        }
+        .ui-state-active {
+            background-color: #007bff !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stock Tracker</h1>
+    <form action="{{ url_for('search') }}" method="POST">
+        <input type="text" id="symbol" name="symbol" placeholder="Enter stock symbol" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Favorites</h2>
+    <ul>
+        {% for favorite in favorites %}
+            <li>
+                {{ favorite }}
+                <form action="{{ url_for('remove_favorite') }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="symbol" value="{{ favorite }}">
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if data %}
+        <h2>Stock Data for {{ symbol }}</h2>
+        <div id="stock-chart"></div>
+        <script>
+            var stockData = {{ data|tojson }};
+            var timestamps = Object.keys(stockData);
+            var prices = timestamps.map(ts => stockData[ts]['1. open']);
+
+            var trace = {
+                x: timestamps,
+                y: prices,
+                type: 'scatter'
+            };
+
+            var layout = {
+                title: 'Stock Price over Time',
+                xaxis: {
+                    title: 'Time'
+                },
+                yaxis: {
+                    title: 'Price'
+                }
+            };
+
+            Plotly.newPlot('stock-chart', [trace], layout);
+        </script>
+    {% endif %}
+
+    <script>
+        $(function() {
+            $("#symbol").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "https://www.alphavantage.co/query",
+                        dataType: "json",
+                        data: {
+                            function: "SYMBOL_SEARCH",
+                            keywords: request.term,
+                            apikey: "{{ API_KEY }}"
+                        },
+                        success: function(data) {
+                            response($.map(data.bestMatches, function(item) {
+                                return {
+                                    label: item["1. symbol"] + " (" + item["2. name"] + ")",
+                                    value: item["1. symbol"]
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#symbol").val(ui.item.value);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
