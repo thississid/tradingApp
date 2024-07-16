@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Data</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Stock Data for {{ symbol }}</h1>
+    <div id="stock-chart"></div>
+    <script>
+        var stockData = JSON.parse('{{ data|tojson|safe }}');
+        var timestamps = Object.keys(stockData);    
+        var prices = timestamps.map(ts => stockData[ts]['1. open']);
+
+        var trace = {
+            x: timestamps,
+            y: prices,
+            type: 'scatter'
+        };
+
+        var layout = {
+            title: 'Stock Price over Time',
+            xaxis: {
+                title: 'Time'
+            },
+            yaxis: {
+                title: 'Price'
+            }
+        };
+
+        Plotly.newPlot('stock-chart', [trace], layout);
+    </script>
+</body>
+</html>

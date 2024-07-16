@@ -16,37 +16,57 @@ BASE_URL = 'https://www.alphavantage.co/query'
 favorites = []
 
 @app.route('/')
-def index():
-    return render_template('index.html', favorites=favorites)
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/favorites')
+def view_favorites():
+    return render_template('favorites.html', favorites=favorites)
+
+@app.route('/search')
+def search():
+    return render_template('search.html')
 
 @app.route('/search', methods=['POST'])
-def search():
+def search_stock():
     symbol = request.form['symbol']
     data = get_stock_data(symbol)
     if data:
-        return render_template('index.html', data=data, symbol=symbol, favorites=favorites)
+        return render_template('stock.html', data=data, symbol=symbol)
     else:
         flash('Stock symbol not found or API limit reached.')
-        return redirect(url_for('index'))
+        return redirect(url_for('search'))
 
 @app.route('/add_favorite', methods=['POST'])
 def add_favorite():
     symbol = request.form['symbol']
     if symbol not in favorites:
         favorites.append(symbol)
-    return redirect(url_for('index'))
+    return redirect(url_for('view_favorites'))
 
 @app.route('/remove_favorite', methods=['POST'])
 def remove_favorite():
     symbol = request.form['symbol']
     if symbol in favorites:
         favorites.remove(symbol)
-    return redirect(url_for('index'))
+    return redirect(url_for('view_favorites'))
 
-@app.route('/favorites')
-def get_favorites():
-    data = {symbol: get_stock_data(symbol) for symbol in favorites}
-    return jsonify(data)
+@app.route('/favorites/<symbol>')
+def show_favorite(symbol):
+    data = get_stock_data(symbol)
+    if data:
+        return render_template('stock.html', data=data, symbol=symbol)
+    else:
+        flash('Stock symbol not found or API limit reached.')
+        return redirect(url_for('view_favorites'))
+
+@app.route('/favorites/data/<symbol>')
+def get_favorite_data(symbol):
+    data = get_stock_data(symbol)
+    if data:
+        return jsonify(data)
+    else:
+        return jsonify({})
 
 def get_stock_data(symbol):
     params = {

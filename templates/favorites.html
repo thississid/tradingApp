@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Favorite Stocks</title>
+</head>
+<body>
+    <h1>Favorite Stocks</h1>
+    <ul>
+        {% for favorite in favorites %}
+            <li>
+                <a href="{{ url_for('show_favorite', symbol=favorite) }}">{{ favorite }}</a>
+                <form action="{{ url_for('remove_favorite') }}" method="POST" style="display: inline;">
+                    <input type="hidden" name="symbol" value="{{ favorite }}">
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
