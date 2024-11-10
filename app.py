@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import requests
 from dotenv import load_dotenv
-import os
+import os   
 
 load_dotenv()
 
@@ -10,14 +10,14 @@ app.secret_key = os.getenv('SECRET_KEY')
 
 # Your API key for Alpha Vantage
 API_KEY = os.getenv('API_KEY')
-BASE_URL = 'https://www.alphavantage.co/query'
+BASE_URL = 'https://www.alphavantage.co/query'      
 
 # Dummy data for favorite stocks
 favorites = []
-
+ 
 @app.route('/')
 def dashboard():
-    return render_template('dashboard.html')
+    return render_template('dashboard.html') 
 
 @app.route('/favorites')
 def view_favorites():
@@ -42,7 +42,7 @@ def add_favorite():
     symbol = request.form['symbol']
     if symbol not in favorites:
         favorites.append(symbol)
-    return redirect(url_for('view_favorites'))
+    return redirect(url_for('view_favorites')) 
 
 @app.route('/remove_favorite', methods=['POST'])
 def remove_favorite():

@@ -1,0 +1,108 @@
+/* Global Styles */
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    color: #4a90e2;
+    font-size: 2rem;
+    margin-top: 20px;
+}
+
+/* Container */
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Links and Buttons */
+a, button {
+    display: inline-block;
+    text-decoration: none;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #4a90e2;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+a:hover, button:hover {
+    background-color: #357abd;
+}
+
+/* Dashboard */
+.dashboard a {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+    width: 200px;
+}
+
+/* Favorites */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Search */
+form {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 0 5px 5px 0;
+}
+
+/* Stock Chart */
+#stock-chart {
+    max-width: 100%;
+    height: 400px;
+    margin: 20px auto;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    a, button {
+        width: 100%;
+    }
+
+    #stock-chart {
+        height: 300px;
+    }
+}
